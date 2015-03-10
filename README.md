@@ -13,6 +13,12 @@ rpmdev-setuptree
 yum groupinstall 'Development Tools'
 ```
 
+## Setup
+
+```
+echo '%_topdir        /home/vagrant/rpmbuild' > ~/.rpmmacros
+```
+
 ## Build the RPM
 
 ```
