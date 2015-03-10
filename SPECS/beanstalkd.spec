@@ -18,22 +18,25 @@ Requires: gcc
 %prep
 %setup -q
 
-
 %build
 make %{?_smp_mflags}
 
-
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} PREFIX=/usr
 %{__install} -p -D -m 0755 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
+mkdir -p %{buildroot}/var/lib/%{name}
 
 %pre
-if [ $1 == 1 ];then
-    /usr/sbin/useradd -r %{name} -g %{name} -s /sbin/nologin 2> /dev/null
+if [ $1 == 1 ]; then
+    /usr/sbin/groupadd -f %{name}
+    /usr/sbin/useradd -r -g %{name} %{name} -s /sbin/nologin 2> /dev/null
 fi
-mkdir /var/lib/beanstalkd
 
 %post
+if [ $1 == 1 ]; then
+    systemctl daemon-reload
+    systemctl stop %{name}
+fi
 
 %preun
 if [ $1 == 0 ];then
@@ -43,14 +46,14 @@ fi
 %postun
 
 %clean
-rm -rf %{buildroot}
+#rm -rf %{buildroot}
 
 %files
-%attr(0755,root,root) /etc/systemd/system/%{name}.service
-%attr(0755,beanstalkd,beanstalkd) /var/lib/%{name}
+%defattr(-,%{name},%{name},0755)
+/var/lib/%{name}
+%attr(0644,root,root) /etc/systemd/system/%{name}.service
+%attr(0755,root,root) /usr/bin/%{name}
 
 %doc
 
-
 %changelog
-

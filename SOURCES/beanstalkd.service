@@ -1,0 +1,9 @@
+[Unit]
+Description=Beanstalkd is a simple, fast work queue
+
+[Service]
+User=root
+ExecStart=/usr/bin/beanstalkd -b /var/lib/beanstalkd
+
+[Install]
+WantedBy=multi-user.target
